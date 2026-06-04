@@ -3,8 +3,22 @@
 <html lang="zh-TW" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- SEO 與 社交分享 (Open Graph) 優化 - 非常適合 GitHub 部署 -->
     <title>台股強弱勢總經分析儀 - 歷史事件與總體經濟多維診斷</title>
+    <meta name="description" content="整合技術面、國發會景氣指標與美聯儲利息環境，利用 AI 驅動的台股多維度個股強弱勢診斷工具。">
+    <meta name="keywords" content="台股, 總體經濟, 技術分析, 景氣燈號, 季線, Gemini, AI分析, GitHub Pages">
+    <meta property="og:title" content="台股強弱勢總經分析儀 - 歷史事件與總體經濟多維診斷">
+    <meta property="og:description" content="一鍵評估任何台股個股在當前總經、歷史事件與技術面下的強弱勢，並利用 AI 進行多維度深度診斷。">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80">
+    
+    <!-- 行動裝置 / PWA 優化 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=180&q=80">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -98,9 +112,27 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #475569;
         }
+        /* GitHub Corner 樣式 */
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out;
+        }
+        @keyframes octocat-wave {
+            0%, 100% { transform: rotate(0); }
+            20%, 60% { transform: rotate(-25deg); }
+            40%, 80% { transform: rotate(10deg); }
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+
+    <!-- GitHub 專屬右上方 Corner 緞帶 (部署於 GitHub 時能引流至您的 Repository) -->
+    <a href="https://github.com" target="_blank" class="github-corner absolute top-0 right-0 z-[60]" aria-label="View source on GitHub" id="githubLink">
+        <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#0ea5e9; color:#0f172a; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+        </svg>
+    </a>
 
     <!-- 頂部導航欄 -->
     <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
@@ -118,12 +150,12 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-end pr-12 sm:pr-0">
                 <div class="relative w-full sm:w-64">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                         <i class="fa-solid fa-key"></i>
                     </span>
-                    <input type="password" id="customApiKey" placeholder="自訂 Gemini API 金鑰 (選填)" 
+                    <input type="password" id="customApiKey" placeholder="輸入 Gemini API 金鑰 (自動快取)" 
                            class="w-full bg-slate-800/80 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
                 </div>
                 <button onclick="toggleSetupModal()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-all text-xs" title="查看使用說明">
@@ -161,41 +193,4 @@
                     <button onclick="loadPreset('2881')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
                         <span class="font-bold text-white block">2881 富邦金</span>
                         <span class="text-[10px] text-slate-400">金融利率敏感</span>
-                    </button>
-                    <button onclick="loadPreset('2002')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
-                        <span class="font-bold text-white block">2002 中鋼</span>
-                        <span class="text-[10px] text-slate-400">傳統基建景氣</span>
-                    </button>
-                    <button onclick="clearForm()" class="px-2 py-1.5 bg-slate-850 hover:bg-red-500/10 hover:border-red-500/30 text-xs rounded border border-slate-700 text-slate-400 hover:text-red-400 transition-all text-center flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-trash-can"></i> 清空重填
-                    </button>
-                </div>
-            </div>
-
-            <!-- 分析參數表單 -->
-            <form id="analyzerForm" onsubmit="handleAnalyzeSubmit(event)" class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col gap-5">
-                
-                <!-- 區塊1: 個股基本資料 -->
-                <div>
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span class="w-1 h-3 bg-brand-500 rounded-full"></span>
-                        1. 個股與技術面指標
-                    </h2>
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">個股代號/名稱 *</label>
-                            <input type="text" id="stockSymbol" required placeholder="如: 2330 台積電" 
-                                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">產業類別 *</label>
-                            <input type="text" id="stockSector" required placeholder="如: 半導體 / 航運" 
-                                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-all">
-                        </div>
-                    </div>
-
-                    <!-- 技術指標配置 -->
-                    <div class="flex flex-col gap-2">
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">季線(60MA)關係 (生命線)</label>
-                            <select id="ma60Relation" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5
+                    </
