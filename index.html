@@ -1,9 +1,9 @@
-```html
+
 <!DOCTYPE html>
-<html lang="zh-TW" class="dark">
+<html lang="zh-TW" class="dark overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     
     <!-- SEO 與 社交分享 (Open Graph) 優化 - 非常適合 GitHub 部署 -->
     <title>台股強弱勢總經分析儀 - 歷史事件與總體經濟多維診斷</title>
@@ -27,6 +27,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Marked.js for Markdown Rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- MathJax for rendering LaTeX formulas -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -112,7 +114,12 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #475569;
         }
-        /* GitHub Corner 樣式 */
+        /* GitHub Corner 樣式 - 小螢幕時自動隱藏避免遮擋 */
+        @media (max-width: 640px) {
+            .github-corner {
+                display: none;
+            }
+        }
         .github-corner:hover .octo-arm {
             animation: octocat-wave 560ms ease-in-out;
         }
@@ -123,7 +130,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white overflow-x-hidden">
 
     <!-- GitHub 專屬右上方 Corner 緞帶 (部署於 GitHub 時能引流至您的 Repository) -->
     <a href="https://github.com" target="_blank" class="github-corner absolute top-0 right-0 z-[60]" aria-label="View source on GitHub" id="githubLink">
@@ -136,61 +143,55 @@
 
     <!-- 頂部導航欄 -->
     <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-brand-500/10 rounded-lg border border-brand-500/20 text-brand-500">
-                    <i class="fa-solid fa-chart-line text-2xl"></i>
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="p-2 bg-brand-500/10 rounded-lg border border-brand-500/20 text-brand-500 shrink-0">
+                    <i class="fa-solid fa-chart-line text-xl sm:text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex flex-wrap items-center gap-2">
                         台股強弱勢總經分析儀
-                        <span class="text-xs bg-brand-500/20 text-brand-500 px-2 py-0.5 rounded border border-brand-500/30">總經 x 技術 x 歷史週期</span>
+                        <span class="text-[10px] bg-brand-500/20 text-brand-500 px-2 py-0.5 rounded border border-brand-500/30 font-mono">Macro x Tech x Cycle</span>
                     </h1>
-                    <p class="text-xs text-slate-400">整合國發會景氣指標與美聯儲利息環境，AI 驅動多維度診斷</p>
+                    <p class="text-[10px] sm:text-xs text-slate-400">整合國發會景氣指標與美聯儲利息環境，AI 驅動多維度診斷</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-3 w-full sm:w-auto justify-end pr-12 sm:pr-0">
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                 <div class="relative w-full sm:w-64">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                        <i class="fa-solid fa-key"></i>
+                        <i class="fa-solid fa-key text-xs"></i>
                     </span>
                     <input type="password" id="customApiKey" placeholder="輸入 Gemini API 金鑰 (自動快取)" 
-                           class="w-full bg-slate-800/80 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                           class="w-full bg-slate-800/80 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all h-10">
                 </div>
-                <button onclick="toggleSetupModal()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-all text-xs" title="查看使用說明">
-                    <i class="fa-solid fa-circle-info text-base"></i>
+                <button onclick="toggleSetupModal()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-all shrink-0 h-10 w-10 flex items-center justify-center" title="查看使用說明">
+                    <i class="fa-solid fa-circle-info text-lg"></i>
                 </button>
             </div>
         </div>
     </header>
 
     <!-- 主要內容區 -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
         
         <!-- 左側配置面板 (4 Columns) -->
-        <section class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6">
+        <section class="lg:col-span-5 xl:col-span-4 flex flex-col gap-4 sm:gap-6">
             
             <!-- 快速預設載入 -->
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
-                <h2 class="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                <h2 class="text-xs sm:text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-bolt text-amber-500"></i>
                     快速載入熱門指標模版
                 </h2>
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="loadPreset('2330')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
+                <!-- 調整為手機端兩列、中大螢幕三列 -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <button onclick="loadPreset('2330')" class="px-2 py-2 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left min-h-[50px] flex flex-col justify-center">
                         <span class="font-bold text-white block">2330 台積電</span>
                         <span class="text-[10px] text-slate-400">半導體領頭羊</span>
                     </button>
-                    <button onclick="loadPreset('2454')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
+                    <button onclick="loadPreset('2454')" class="px-2 py-2 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left min-h-[50px] flex flex-col justify-center">
                         <span class="font-bold text-white block">2454 聯發科</span>
                         <span class="text-[10px] text-slate-400">高階 IC 設計</span>
                     </button>
-                    <button onclick="loadPreset('2603')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
-                        <span class="font-bold text-white block">2603 長榮</span>
-                        <span class="text-[10px] text-slate-400">航運景氣循環</span>
-                    </button>
-                    <button onclick="loadPreset('2881')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
-                        <span class="font-bold text-white block">2881 富邦金</span>
-                        <span class="text-[10px] text-slate-400">金融利率敏感</span>
-                    </
+                    <button onclick="loadPreset('2603')" class="px-2 py-2 bg-slate-800 hover:bg-brand-500
