@@ -1,0 +1,201 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台股強弱勢總經分析儀 - 歷史事件與總體經濟多維診斷</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Marked.js for Markdown Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 報告 Markdown 樣式優化 */
+        .report-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid #0ea5e9;
+            padding-left: 0.5rem;
+        }
+        .report-content p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+        .report-content ul, .report-content ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            list-style-type: disc;
+            color: #cbd5e1;
+        }
+        .report-content li {
+            margin-bottom: 0.5rem;
+        }
+        .report-content strong {
+            color: #f1f5f9;
+        }
+        .report-content blockquote {
+            background-color: #1e293b;
+            border-left: 4px solid #ef4444;
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            border-radius: 0.375rem;
+            font-style: italic;
+        }
+        .report-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        .report-content th, .report-content td {
+            border: 1px solid #334155;
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+        }
+        .report-content th {
+            background-color: #1e293b;
+            color: #38bdf8;
+        }
+        /* 自訂滾動條 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+
+    <!-- 頂部導航欄 -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-brand-500/10 rounded-lg border border-brand-500/20 text-brand-500">
+                    <i class="fa-solid fa-chart-line text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        台股強弱勢總經分析儀
+                        <span class="text-xs bg-brand-500/20 text-brand-500 px-2 py-0.5 rounded border border-brand-500/30">總經 x 技術 x 歷史週期</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">整合國發會景氣指標與美聯儲利息環境，AI 驅動多維度診斷</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <div class="relative w-full sm:w-64">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="fa-solid fa-key"></i>
+                    </span>
+                    <input type="password" id="customApiKey" placeholder="自訂 Gemini API 金鑰 (選填)" 
+                           class="w-full bg-slate-800/80 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                </div>
+                <button onclick="toggleSetupModal()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-all text-xs" title="查看使用說明">
+                    <i class="fa-solid fa-circle-info text-base"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- 左側配置面板 (4 Columns) -->
+        <section class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6">
+            
+            <!-- 快速預設載入 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
+                <h2 class="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                    快速載入熱門指標模版
+                </h2>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="loadPreset('2330')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
+                        <span class="font-bold text-white block">2330 台積電</span>
+                        <span class="text-[10px] text-slate-400">半導體領頭羊</span>
+                    </button>
+                    <button onclick="loadPreset('2454')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
+                        <span class="font-bold text-white block">2454 聯發科</span>
+                        <span class="text-[10px] text-slate-400">高階 IC 設計</span>
+                    </button>
+                    <button onclick="loadPreset('2603')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
+                        <span class="font-bold text-white block">2603 長榮</span>
+                        <span class="text-[10px] text-slate-400">航運景氣循環</span>
+                    </button>
+                    <button onclick="loadPreset('2881')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
+                        <span class="font-bold text-white block">2881 富邦金</span>
+                        <span class="text-[10px] text-slate-400">金融利率敏感</span>
+                    </button>
+                    <button onclick="loadPreset('2002')" class="px-2 py-1.5 bg-slate-800 hover:bg-brand-500/20 hover:border-brand-500/40 text-xs rounded border border-slate-700 transition-all text-left">
+                        <span class="font-bold text-white block">2002 中鋼</span>
+                        <span class="text-[10px] text-slate-400">傳統基建景氣</span>
+                    </button>
+                    <button onclick="clearForm()" class="px-2 py-1.5 bg-slate-850 hover:bg-red-500/10 hover:border-red-500/30 text-xs rounded border border-slate-700 text-slate-400 hover:text-red-400 transition-all text-center flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> 清空重填
+                    </button>
+                </div>
+            </div>
+
+            <!-- 分析參數表單 -->
+            <form id="analyzerForm" onsubmit="handleAnalyzeSubmit(event)" class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col gap-5">
+                
+                <!-- 區塊1: 個股基本資料 -->
+                <div>
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="w-1 h-3 bg-brand-500 rounded-full"></span>
+                        1. 個股與技術面指標
+                    </h2>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">個股代號/名稱 *</label>
+                            <input type="text" id="stockSymbol" required placeholder="如: 2330 台積電" 
+                                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">產業類別 *</label>
+                            <input type="text" id="stockSector" required placeholder="如: 半導體 / 航運" 
+                                   class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-all">
+                        </div>
+                    </div>
+
+                    <!-- 技術指標配置 -->
+                    <div class="flex flex-col gap-2">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">季線(60MA)關係 (生命線)</label>
+                            <select id="ma60Relation" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5
